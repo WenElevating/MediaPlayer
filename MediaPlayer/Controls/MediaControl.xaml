@@ -1,0 +1,194 @@
+﻿<UserControl
+    x:Class="MediaPlayer.Controls.MediaControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:con="clr-namespace:MediaPlayer.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MediaPlayer.Controls"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance Type=local:MediaControl}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Background="White"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <con:StringToIntConverter x:Key="StringToIntConverter" />
+        <Style x:Key="BaseSliderStyle" TargetType="Slider">
+            <Setter Property="Width" Value="auto" />
+            <Setter Property="Height" Value="auto" />
+            <Setter Property="IsMoveToPointEnabled" Value="True" />
+            <Setter Property="LargeChange" Value="10" />
+            <Setter Property="SmallChange" Value="1" />
+            <Setter Property="Background" Value="LightGray" />
+            <Setter Property="Foreground" Value="RoyalBlue" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="DefaultLeftRepeatButtonStyle" TargetType="RepeatButton">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Height="4" Background="#979797" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="DefaultRightRepeatButtonStyle" TargetType="RepeatButton">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Height="4" Background="Transparent" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="DefaultThumbStyle" TargetType="Thumb">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Ellipse
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Fill="{TemplateBinding Background}" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style BasedOn="{StaticResource BaseSliderStyle}" TargetType="Slider">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Border
+                                Name="TrackBackground"
+                                Grid.Row="1"
+                                Height="4"
+                                Background="#212121" />
+                            <Track Name="PART_Track" Grid.Row="1">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource DefaultLeftRepeatButtonStyle}" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb
+                                        Width="15"
+                                        Height="15"
+                                        Background="#949494"
+                                        Style="{StaticResource DefaultThumbStyle}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource DefaultRightRepeatButtonStyle}" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="3*" />
+        </Grid.RowDefinitions>
+        <Image
+            x:Name="VideoMediaCanvas"
+            Grid.Row="0"
+            Source="{Binding CurrentImg}" />
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Text="{Binding CurrentPlayTime, FallbackValue=00:00:00}" />
+
+                <Slider
+                    x:Name="VedioPlayerSlider"
+                    Grid.Column="1"
+                    mah:SliderHelper.ThumbFillBrush="#008A00"
+                    mah:SliderHelper.TrackFillBrush="#9D9D9D"
+                    mah:SliderHelper.TrackValueFillBrush="#008A00"
+                    Interval="1"
+                    IsMoveToPointEnabled="True"
+                    Maximum="{Binding SliderTotalValue, FallbackValue=100}"
+                    PreviewMouseLeftButtonDown="Slider_PreviewMouseLeftButtonDown"
+                    PreviewMouseLeftButtonUp="Slider_PreviewMouseLeftButtonUp"
+                    PreviewMouseMove="Slider_PreviewMouseMove"
+                    Value="{Binding SliderValue}" />
+
+                <TextBlock
+                    Grid.Column="2"
+                    Margin="2,0,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Text="{Binding TotalPlayTime, FallbackValue=00:00:00}" />
+            </Grid>
+            <Grid Grid.Row="1">
+                <TextBlock
+                    Grid.Column="2"
+                    Margin="2,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Text="{Binding CurrentPlayFilePath, FallbackValue=暂无}" />
+            </Grid>
+            <Grid Grid.Row="2">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button
+                        Width="120"
+                        mah:ControlsHelper.CornerRadius="10"
+                        Content="上传"
+                        PreviewMouseLeftButtonUp="Upload_PreviewMouseLeftButtonUp" />
+                    <Button
+                        Width="120"
+                        mah:ControlsHelper.CornerRadius="10"
+                        Content="播放"
+                        PreviewMouseLeftButtonUp="PlayVedio_PreviewMouseLeftButtonUp" />
+                    <Button
+                        Width="120"
+                        mah:ControlsHelper.CornerRadius="10"
+                        Content="暂停"
+                        PreviewMouseLeftButtonUp="Pause_PreviewMouseLeftButtonUp" />
+                    <Button
+                        Width="120"
+                        mah:ControlsHelper.CornerRadius="10"
+                        Content="停止"
+                        PreviewMouseLeftButtonUp="Stop_PreviewMouseLeftButtonUp" />
+                    <Button
+                        Width="120"
+                        mah:ControlsHelper.CornerRadius="10"
+                        Content="视频推流"
+                        PreviewMouseLeftButtonUp="PushStream_PreviewMouseLeftButtonUp" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+
+</UserControl>
